@@ -7,13 +7,25 @@ FLAG = os.environ.get("FLAG","CTF{dev}")
 
 cache = {}
 
+@app.route("/")
+def index():
+    return """
+<h2>User Profile Service</h2>
+<p>Public profile API with performance caching enabled.</p>
+<ul>
+<li>GET /profile/&lt;uid&gt;</li>
+<li>GET /health</li>
+</ul>
+<p>Admin users can view extended profile data.</p>
+"""
+
 @app.route("/health")
 def health():
     return "ok"
 
 @app.route("/profile/<uid>")
 def profile(uid):
-    key = uid   # BUG: cache key ignores auth context
+    key = uid
 
     if key in cache:
         return cache[key]
@@ -27,4 +39,5 @@ def profile(uid):
     return resp
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
